@@ -1,0 +1,57 @@
+# 🌐 AWS WAFv2 Geo-Fencing Terraform Module
+
+This Terraform module creates an AWS WAFv2 Web ACL that **allows traffic only from specified countries** (default is India 🇮🇳) and blocks all others. The WAF can be attached to an **Application Load Balancer (ALB)** or **CloudFront Distribution**.
+
+---
+
+## 🚀 Features
+
+- ✅ Geo-based access control using AWS WAFv2 `GeoMatchStatement`
+- ✅ Default block for non-matching countries
+- ✅ Supports attachment to:
+  - Application Load Balancers (ALB)
+  - CloudFront Distributions
+- ✅ CloudWatch metrics enabled
+- ✅ Fully parameterized and reusable
+
+---
+
+## 📁 Module Structure
+
+india-ai-waf/
+├── main.tf # Example usage
+├── variables.tf # (optional)
+├── outputs.tf # (optional)
+└── modules/
+    └── waf/
+        ├── main.tf
+        ├── variables.tf
+        └── outputs.tf
+
+
+
+
+---
+
+## 🧩 Usage
+(The main.tf which is in the root folder have the required comments which can tell you about the usage of this terraform code)
+Here’s how you can use this module in your Terraform project:
+
+```hcl
+module "waf" {
+  source                = "./modules/waf"
+  region                = "ap-south-1"  # or "us-east-1" for CloudFront
+  scope                 = "REGIONAL"    # or "CLOUDFRONT"
+  name                  = "geo-fencing-web-acl"
+  description           = "WAF to allow only India traffic"
+  allowed_country_codes = ["IN"]
+  metric_name           = "geoFencingACL"
+
+  associate_to_resource = true
+  resource_arn          = "arn:aws:elasticloadbalancing:ap-south-1:123456789012:loadbalancer/app/my-alb/abcd1234abcd1234"
+
+  tags = {
+    Environment = "dev"
+    Project     = "india-ai"
+  }
+}
